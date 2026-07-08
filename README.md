@@ -2,63 +2,198 @@
 
 ![Bistro AI Interface](assets/screenshot.png)
 
-A real-time, low-latency conversational AI voice agent optimized for bidirectional streaming. This application demonstrates the integration of state-of-the-art machine learning models across the audio-processing pipeline to create a seamless, human-like voice interaction experience.
 
-## Architecture and Technical Stack
 
-The system is built on a modular, event-driven architecture utilizing WebSockets for real-time bidirectional communication.
+A production-oriented, real-time conversational AI voice agent designed for ultra-low latency, bidirectional speech interactions. The system combines modern speech processing and large language models into a unified streaming pipeline, enabling natural, interruption-aware conversations that closely resemble human dialogue.
 
-- **Backend Framework**: FastAPI (Python) providing asynchronous WebSocket endpoints.
-- **Voice Activity Detection (VAD)**: Silero VAD for highly accurate, low-latency speech detection.
-- **Speech-to-Text (STT)**: Faster-Whisper (Systran) for rapid and accurate transcription of audio streams.
-- **Language Model (LLM)**: Integration with NVIDIA API (or OpenAI compatible endpoints) for intelligent, context-aware reasoning and response generation.
-- **Text-to-Speech (TTS)**: Edge-TTS for natural-sounding, synthesized voice output.
-- **Frontend Client**: Vanilla JavaScript and HTML5 Web Audio API, establishing a direct WebSocket connection for audio byte-stream transmission and reception.
+Built using an asynchronous, modular architecture, the application processes speech continuously from microphone input through voice activity detection, transcription, language understanding, and speech synthesis before streaming the generated audio response back to the client in real time.
 
-## Key Features
+---
 
-- **Full-Duplex Communication**: Supports continuous audio streaming from the client while simultaneously receiving synthesized speech back from the server.
-- **Interruption Handling**: Advanced state management allows the user to interrupt the agent mid-sentence, instantly halting the current TTS stream and processing the new user input.
-- **Modular Design**: Each component (VAD, STT, LLM, TTS) is isolated in its own module (`modules/`), allowing for straightforward swapping of underlying models (e.g., upgrading from Whisper to a specialized medical STT model) without impacting the broader system architecture.
-- **Cross-Origin Support**: Pre-configured with CORS middleware to allow embedding the frontend interface across disparate domains, such as a developer portfolio.
+# Architecture
 
-## Live Demonstration
+The application follows an event-driven architecture centered around persistent WebSocket communication, allowing simultaneous audio transmission and reception with minimal latency.
 
-A live demonstration of the backend is currently routed securely via a Cloudflare Tunnel, exposing the WebSocket endpoint without exposing the host network.
+## Backend
 
-**Live Backend WebSocket Endpoint:**
-`wss://bureau-render-lightweight-quoted.trycloudflare.com/ws`
+* **Framework:** FastAPI (Python)
+* **Communication:** Asynchronous WebSocket endpoints for real-time bidirectional streaming
+* **Concurrency:** Fully asynchronous request handling using Python's `asyncio`
 
-*Note: As this is a live demonstration endpoint, uptime is contingent on the host machine. The frontend client (`client/index.html`) is pre-configured to connect to this endpoint automatically.*
+## Speech Processing Pipeline
 
-## Setup and Installation
+### Voice Activity Detection (VAD)
 
-### Prerequisites
-- Python 3.11+
-- FFmpeg (required for audio processing)
+Silero VAD is used to detect speech boundaries with high accuracy and low latency, ensuring efficient audio processing while minimizing unnecessary transcription requests.
 
-### Local Deployment
+### Speech-to-Text (STT)
 
-1. Clone the repository and navigate to the project root.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set your API keys as environment variables:
-   ```bash
-   export NVIDIA_API_KEY="your-api-key"
-   ```
-4. Start the FastAPI server:
-   ```bash
-   uvicorn main:app --host 0.0.0.0 --port 8000
-   ```
-5. Open `client/index.html` in your web browser. If connecting to a local server instead of the Cloudflare tunnel, modify the WebSocket connection string in `index.html` to `ws://localhost:8000/ws`.
+Faster-Whisper (Systran implementation) provides high-performance speech recognition optimized for streaming audio workloads, delivering fast and accurate transcriptions.
 
-## Project Structure
+### Language Model
 
-- `main.py`: Entry point for the FastAPI server and WebSocket routing.
-- `modules/vad.py`: Voice Activity Detection integration.
-- `modules/stt.py`: Speech-to-Text transcription logic.
-- `modules/llm.py`: Language Model interfacing and prompt management.
-- `modules/tts.py`: Text-to-Speech generation and audio chunking.
-- `client/`: Static HTML, CSS, and JS frontend for microphone capture and audio playback.
+The conversational reasoning layer integrates with NVIDIA API endpoints (or any OpenAI-compatible API), enabling context-aware dialogue generation with support for conversational memory and prompt customization.
+
+### Text-to-Speech (TTS)
+
+Edge-TTS synthesizes natural-sounding speech and streams generated audio incrementally, reducing perceived response latency while maintaining conversational fluidity.
+
+## Frontend
+
+The client application is built using Vanilla JavaScript and the HTML5 Web Audio API.
+
+The frontend is responsible for:
+
+* Capturing microphone audio
+* Streaming audio chunks to the backend over WebSockets
+* Receiving synthesized speech
+* Playing streamed audio with minimal delay
+* Managing conversation state and interruption events
+
+---
+
+# Key Features
+
+## Real-Time Bidirectional Streaming
+
+Supports simultaneous audio input and output through persistent WebSocket connections, enabling uninterrupted conversational interaction.
+
+## Full-Duplex Communication
+
+Users can continue speaking while the assistant is generating responses, creating a natural conversational experience rather than a traditional request-response workflow.
+
+## Interruption Handling
+
+The system supports barge-in functionality, allowing users to interrupt the assistant during speech generation. Ongoing text-to-speech synthesis is immediately halted, and incoming speech is prioritized for processing.
+
+## Modular Architecture
+
+Each stage of the speech pipeline is implemented as an independent module:
+
+* Voice Activity Detection
+* Speech Recognition
+* Language Model Integration
+* Speech Synthesis
+
+This modular design allows components to be replaced or upgraded independently without requiring changes to the overall application architecture.
+
+## Low-Latency Processing
+
+Streaming is implemented throughout the pipeline to minimize end-to-end response time, providing a responsive conversational experience suitable for real-time voice applications.
+
+## Cross-Origin Support
+
+CORS middleware is configured to allow secure integration with external frontend applications, enabling deployment across different domains or portfolio websites.
+
+---
+
+# Live Demonstration
+
+The backend is securely exposed through a Cloudflare Tunnel, providing public access to the WebSocket endpoint without exposing the host machine directly.
+
+**WebSocket Endpoint**
+
+```text
+wss://bureau-render-lightweight-quoted.trycloudflare.com/ws
+```
+
+The demonstration frontend is preconfigured to connect to this endpoint automatically.
+
+Availability depends on the host machine and the active Cloudflare Tunnel session.
+
+---
+
+# Technology Stack
+
+| Component                | Technology                               |
+| ------------------------ | ---------------------------------------- |
+| Backend                  | FastAPI                                  |
+| Programming Language     | Python 3.11+                             |
+| Communication            | WebSockets                               |
+| Voice Activity Detection | Silero VAD                               |
+| Speech-to-Text           | Faster-Whisper                           |
+| Language Model           | NVIDIA API / OpenAI-Compatible APIs      |
+| Text-to-Speech           | Edge-TTS                                 |
+| Frontend                 | HTML5, Vanilla JavaScript, Web Audio API |
+| Deployment               | Cloudflare Tunnel                        |
+
+---
+
+# Installation
+
+## Prerequisites
+
+* Python 3.11 or later
+* FFmpeg
+
+---
+
+## Setup
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+cd <repository-name>
+```
+
+Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Configure the required environment variables:
+
+```bash
+export NVIDIA_API_KEY="your-api-key"
+```
+
+Start the FastAPI server:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+Open `client/index.html` in a web browser.
+
+For local development, update the WebSocket endpoint inside `client/index.html`:
+
+```text
+ws://localhost:8000/ws
+```
+
+---
+
+# Project Structure
+
+```text
+.
+├── main.py                 # FastAPI application entry point
+├── modules/
+│   ├── vad.py              # Voice Activity Detection
+│   ├── stt.py              # Speech-to-Text pipeline
+│   ├── llm.py              # Language model integration
+│   └── tts.py              # Text-to-Speech synthesis
+├── client/
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+└── requirements.txt
+```
+
+---
+
+# Design Principles
+
+The project emphasizes scalability, maintainability, and extensibility.
+
+* Modular service-oriented architecture
+* Fully asynchronous processing pipeline
+* Streaming-first communication model
+* Clear separation between frontend and backend responsibilities
+* Easily replaceable AI components
+* Production-ready WebSocket communication
+* Low-latency speech processing
+
+The architecture enables developers to integrate alternative speech recognition models, language models, or speech synthesis engines with minimal changes to the surrounding infrastructure, making the system suitable for research, rapid prototyping, and production deployment.
