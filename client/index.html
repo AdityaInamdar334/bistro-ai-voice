@@ -278,7 +278,8 @@
 
         async function connect() {
             try {
-                ws = new WebSocket(`ws://${window.location.host}/ws`);
+                const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                ws = new WebSocket('wss://bureau-render-lightweight-quoted.trycloudflare.com/ws');
                 ws.binaryType = 'arraybuffer';
 
                 ws.onopen = async () => {
