@@ -133,8 +133,8 @@ Availability depends on the host machine and the active Cloudflare Tunnel sessio
 Clone the repository:
 
 ```bash
-git clone <repository-url>
-cd <repository-name>
+git clone https://github.com/AdityaInamdar334/bistro-ai-voice.git
+cd bistro-ai-voice
 ```
 
 Install the required dependencies:
