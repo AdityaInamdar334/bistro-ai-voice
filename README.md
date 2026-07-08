@@ -1,5 +1,7 @@
 # Bistro AI Voice Agent
 
+![Bistro AI Interface](assets/screenshot.png)
+
 A real-time, low-latency conversational AI voice agent optimized for bidirectional streaming. This application demonstrates the integration of state-of-the-art machine learning models across the audio-processing pipeline to create a seamless, human-like voice interaction experience.
 
 ## Architecture and Technical Stack
